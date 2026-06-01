@@ -1,0 +1,89 @@
+// Prisma schema for Elaine Confeitaria backend
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  descricao String?
+  tamanho   String?
+  tipo      String?
+
+  tpItems TPItem[]
+  pItems  PItem[]
+}
+
+model Massa {
+  id        Int      @id @default(autoincrement())
+  descricao String
+}
+
+model Sabor {
+  id        Int      @id @default(autoincrement())
+  descricao String
+
+  @@map("Sabores")
+}
+
+model Usuario {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  senha          String
+  endereco       String?
+  telefone       String?
+  cpf            String?
+  cnpj           String?
+  dataNascimento String?
+
+  pedidos Pedido[]
+}
+
+model TabelaPreco {
+  id         Int      @id @default(autoincrement())
+  descricao  String
+  dataInicio DateTime
+  dataFim    DateTime?
+  atual      Boolean  @default(false)
+
+  itens TPItem[]
+}
+
+model TPItem {
+  id            Int         @id @default(autoincrement())
+  tabelaPreco   TabelaPreco @relation(fields: [tabelaPrecoId], references: [id])
+  tabelaPrecoId Int
+  produto       Produto     @relation(fields: [produtoId], references: [id])
+  produtoId     Int
+  preco         Float
+}
+
+model Pedido {
+  id          Int      @id @default(autoincrement())
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+  endereco    String
+  tipoEntrega String
+  valorTotal  Float
+  desconto    Float?
+  status      String
+
+  itens PItem[]
+}
+
+model PItem {
+  id         Int     @id @default(autoincrement())
+  pedido     Pedido  @relation(fields: [pedidoId], references: [id])
+  pedidoId   Int
+  produto    Produto @relation(fields: [produtoId], references: [id])
+  produtoId  Int
+  quantidade Int
+  preco      Float
+}
