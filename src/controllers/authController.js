@@ -1,23 +1,23 @@
 const authService = require('../services/authService');
+const { validateLoginPayload } = require('../validators/authValidator');
 
-async function login(request, response, next) {
-  try {
-    const { email, senha } = request.body;
+function createAuthController(dependencies = {}) {
+  const { service = authService } = dependencies;
 
-    if (!email || !senha) {
-      const error = new Error('Email e senha são obrigatórios');
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const result = await authService.login(email, senha);
-    response.json(result);
-  } catch (error) {
-    next(error);
-  }
+  return {
+    async login(request, response, next) {
+      try {
+        const { email, senha } = validateLoginPayload(request.body);
+        const result = await service.login(email, senha);
+        response.json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  };
 }
 
 module.exports = {
-  login,
+  createAuthController,
+  ...createAuthController(),
 };
-

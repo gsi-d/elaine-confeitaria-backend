@@ -1,58 +1,71 @@
 const pedidoService = require('../services/pedidoService');
+const { createHttpError } = require('../errors/httpError');
 
-async function getAll(request, response, next) {
-  try {
-    const pedidos = await pedidoService.getAllPedidos();
-    response.json(pedidos);
-  } catch (error) {
-    next(error);
+function parseId(id) {
+  const parsedId = Number(id);
+
+  if (!Number.isInteger(parsedId) || parsedId <= 0) {
+    throw createHttpError(400, 'Identificador de pedido inválido');
   }
+
+  return parsedId;
 }
 
-async function getById(request, response, next) {
-  try {
-    const id = Number(request.params.id);
-    const pedido = await pedidoService.getPedidoById(id);
-    response.json(pedido);
-  } catch (error) {
-    next(error);
-  }
-}
+function createPedidoController(dependencies = {}) {
+  const { service = pedidoService } = dependencies;
 
-async function create(request, response, next) {
-  try {
-    const pedido = await pedidoService.createPedido(request.body);
-    response.status(201).json(pedido);
-  } catch (error) {
-    next(error);
-  }
-}
+  return {
+    async getAll(request, response, next) {
+      try {
+        const pedidos = await service.getAllPedidos(request.user.id);
+        response.json(pedidos);
+      } catch (error) {
+        next(error);
+      }
+    },
 
-async function update(request, response, next) {
-  try {
-    const id = Number(request.params.id);
-    const pedido = await pedidoService.updatePedido(id, request.body);
-    response.json(pedido);
-  } catch (error) {
-    next(error);
-  }
-}
+    async getById(request, response, next) {
+      try {
+        const id = parseId(request.params.id);
+        const pedido = await service.getPedidoById(id, request.user.id);
+        response.json(pedido);
+      } catch (error) {
+        next(error);
+      }
+    },
 
-async function remove(request, response, next) {
-  try {
-    const id = Number(request.params.id);
-    await pedidoService.deletePedido(id);
-    response.status(204).send();
-  } catch (error) {
-    next(error);
-  }
+    async create(request, response, next) {
+      try {
+        const pedido = await service.createPedido(request.user.id, request.body);
+        response.status(201).json(pedido);
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async update(request, response, next) {
+      try {
+        const id = parseId(request.params.id);
+        const pedido = await service.updatePedido(id, request.user.id, request.body);
+        response.json(pedido);
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async remove(request, response, next) {
+      try {
+        const id = parseId(request.params.id);
+        await service.deletePedido(id, request.user.id);
+        response.status(204).send();
+      } catch (error) {
+        next(error);
+      }
+    },
+  };
 }
 
 module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  remove,
+  createPedidoController,
+  ...createPedidoController(),
 };
-

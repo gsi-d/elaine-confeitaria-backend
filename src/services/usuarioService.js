@@ -1,6 +1,6 @@
-const prisma = require('../config/prisma');
 const { encrypt, decrypt } = require('../utils/encryption');
 const { hashPassword } = require('../utils/password');
+const { usuarioRepository } = require('../repositories/usuarioRepository');
 
 function encryptUsuarioFields(usuarioData) {
   const encrypted = { ...usuarioData };
@@ -53,12 +53,12 @@ function sanitizeUsuario(usuario) {
 }
 
 async function getAllUsuarios() {
-  const usuarios = await prisma.usuario.findMany();
+  const usuarios = await usuarioRepository.findMany();
   return usuarios.map(sanitizeUsuario);
 }
 
 async function getUsuarioById(id) {
-  const usuario = await prisma.usuario.findUnique({ where: { id } });
+  const usuario = await usuarioRepository.findById(id);
 
   if (!usuario) {
     const error = new Error('Usuário não encontrado');
@@ -79,16 +79,14 @@ async function createUsuario(data) {
   const hashedPassword = await hashPassword(data.senha);
   const encryptedFields = encryptUsuarioFields(data);
 
-  const created = await prisma.usuario.create({
-    data: {
-      email: data.email,
-      senha: hashedPassword,
-      endereco: encryptedFields.endereco,
-      telefone: encryptedFields.telefone,
-      cpf: encryptedFields.cpf,
-      cnpj: encryptedFields.cnpj,
-      dataNascimento: encryptedFields.dataNascimento,
-    },
+  const created = await usuarioRepository.create({
+    email: data.email,
+    senha: hashedPassword,
+    endereco: encryptedFields.endereco,
+    telefone: encryptedFields.telefone,
+    cpf: encryptedFields.cpf,
+    cnpj: encryptedFields.cnpj,
+    dataNascimento: encryptedFields.dataNascimento,
   });
 
   return sanitizeUsuario(created);
@@ -124,10 +122,7 @@ async function updateUsuario(id, data) {
   }
 
   try {
-    const updated = await prisma.usuario.update({
-      where: { id },
-      data: updateData,
-    });
+    const updated = await usuarioRepository.update(id, updateData);
 
     return sanitizeUsuario(updated);
   } catch (error) {
@@ -143,7 +138,7 @@ async function updateUsuario(id, data) {
 
 async function deleteUsuario(id) {
   try {
-    await prisma.usuario.delete({ where: { id } });
+    await usuarioRepository.delete(id);
   } catch (error) {
     if (error.code === 'P2025') {
       const notFoundError = new Error('Usuário não encontrado');
@@ -163,4 +158,3 @@ module.exports = {
   deleteUsuario,
   sanitizeUsuario,
 };
-
