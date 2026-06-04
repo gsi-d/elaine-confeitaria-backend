@@ -16,6 +16,8 @@ model Produto {
   descricao String?
   tamanho   String?
   tipo      String?
+  imagemUrl String?
+  imagemAlt String?
 
   tpItems TPItem[]
   pItems  PItem[]
