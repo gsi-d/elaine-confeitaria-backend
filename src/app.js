@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -34,6 +35,7 @@ function createApp(serviceOverrides = {}) {
   app.use(cors());
   app.use(express.json());
   app.use(morgan('dev'));
+  app.use('/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 
   app.use(globalMiddleware);
 
