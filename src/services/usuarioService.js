@@ -82,6 +82,7 @@ async function createUsuario(data) {
   const created = await usuarioRepository.create({
     email: data.email,
     senha: hashedPassword,
+    isAdmin: false,
     endereco: encryptedFields.endereco,
     telefone: encryptedFields.telefone,
     cpf: encryptedFields.cpf,

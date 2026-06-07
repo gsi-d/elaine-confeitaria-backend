@@ -4,6 +4,7 @@
       "id": 1,
       "email": "cliente@elaine.com",
       "senha": "$2b$10$cuUlXpShcTxVLESlEdQLZ.PUXngo7MISwp7SBSHSz/lTFOos7cfWu",
+      "isAdmin": true,
       "endereco": "Rua das Flores, 123",
       "telefone": "(11) 99999-1111",
       "cpf": "123.456.789-00",
@@ -14,12 +15,30 @@
       "id": 2,
       "email": "novo@cliente.com",
       "senha": "$2b$10$QSYeK6/qvLYCCpmpGTMEaecLZY1p5aZIQ.deb.cECT9dg0OD9UWJa",
+      "isAdmin": false,
       "endereco": "a440a2235a5ad1409b468158b9f2a67e:12880ace37b4258403",
       "telefone": "8540adb6e39626ad9a62c484ba64a6ab:3a2de5fef784e83291ce66",
       "cpf": "9ae27cc895b4950041208359104365cf:c3b9c93ace00a694e2f21a",
       "dataNascimento": "c29d50b627e61dbf5c0b017346f4f9b6:9e30b3abc7ef9a3de926"
+    },
+    {
+      "id": 3,
+      "email": "gui@gui.com",
+      "senha": "$2b$10$gsUHPLJwZv2FSrJMVLNtnu2tlSSHKG4Fv6fV7crpaJUDcMSF5EKui",
+      "isAdmin": false,
+      "endereco": "5fe1ae8e8163bf813450f012bf741b4b:a31027fe00",
+      "telefone": "d1074540b449cdcb8037c8a1ae01555e:e54812d07c06e6cccafe",
+      "cpf": "1ac3fbf761490bb3347dc33111fe8eae:424a60bbd78565e251b4ee",
+      "dataNascimento": "e17e6d51bc104a9bff59377ce28480dc:3a029cdf57dc6341c949"
     }
   ],
+  "configuracaoEntrega": {
+    "tempoMinimoMinutos": 25,
+    "tempoMaximoMinutos": 45,
+    "mensagemLivre": "Prazo sujeito a variacao conforme demanda.",
+    "updatedByUsuarioId": 1,
+    "updatedAt": "2026-06-07T13:42:18.208Z"
+  },
   "produtos": [
     {
       "id": 1,
@@ -186,7 +205,7 @@
       "anexo": [],
       "valorTotal": 185,
       "desconto": 5,
-      "status": "EM_PREPARO",
+      "status": "SAIU_PARA_ENTREGA",
       "itens": [
         {
           "id": 1,
@@ -305,7 +324,7 @@
     }
   ],
   "counters": {
-    "usuario": 3,
+    "usuario": 4,
     "pedido": 7,
     "pedidoItem": 9,
     "produto": 5,
