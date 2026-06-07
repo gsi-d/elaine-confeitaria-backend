@@ -11,13 +11,17 @@ function parseId(id) {
   return parsedId;
 }
 
+function resolvePedidoUserId(request) {
+  return Number(request.user?.id) || 1;
+}
+
 function createPedidoController(dependencies = {}) {
   const { service = pedidoService } = dependencies;
 
   return {
     async getAll(request, response, next) {
       try {
-        const pedidos = await service.getAllPedidos(request.user.id);
+        const pedidos = await service.getAllPedidos(resolvePedidoUserId(request));
         response.json(pedidos);
       } catch (error) {
         next(error);
@@ -27,7 +31,7 @@ function createPedidoController(dependencies = {}) {
     async getById(request, response, next) {
       try {
         const id = parseId(request.params.id);
-        const pedido = await service.getPedidoById(id, request.user.id);
+        const pedido = await service.getPedidoById(id, resolvePedidoUserId(request));
         response.json(pedido);
       } catch (error) {
         next(error);
@@ -36,7 +40,7 @@ function createPedidoController(dependencies = {}) {
 
     async create(request, response, next) {
       try {
-        const pedido = await service.createPedido(request.user.id, request.body);
+        const pedido = await service.createPedido(resolvePedidoUserId(request), request.body);
         response.status(201).json(pedido);
       } catch (error) {
         next(error);
@@ -46,7 +50,7 @@ function createPedidoController(dependencies = {}) {
     async update(request, response, next) {
       try {
         const id = parseId(request.params.id);
-        const pedido = await service.updatePedido(id, request.user.id, request.body);
+        const pedido = await service.updatePedido(id, resolvePedidoUserId(request), request.body);
         response.json(pedido);
       } catch (error) {
         next(error);
@@ -56,8 +60,18 @@ function createPedidoController(dependencies = {}) {
     async remove(request, response, next) {
       try {
         const id = parseId(request.params.id);
-        await service.deletePedido(id, request.user.id);
+        await service.deletePedido(id, resolvePedidoUserId(request));
         response.status(204).send();
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async updateStatus(request, response, next) {
+      try {
+        const id = parseId(request.params.id);
+        const pedido = await service.updatePedidoStatus(id, request.body);
+        response.json(pedido);
       } catch (error) {
         next(error);
       }

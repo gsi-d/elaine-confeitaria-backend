@@ -9,6 +9,15 @@
       "cpf": "123.456.789-00",
       "cnpj": null,
       "dataNascimento": "1995-08-10"
+    },
+    {
+      "id": 2,
+      "email": "novo@cliente.com",
+      "senha": "$2b$10$QSYeK6/qvLYCCpmpGTMEaecLZY1p5aZIQ.deb.cECT9dg0OD9UWJa",
+      "endereco": "a440a2235a5ad1409b468158b9f2a67e:12880ace37b4258403",
+      "telefone": "8540adb6e39626ad9a62c484ba64a6ab:3a2de5fef784e83291ce66",
+      "cpf": "9ae27cc895b4950041208359104365cf:c3b9c93ace00a694e2f21a",
+      "dataNascimento": "c29d50b627e61dbf5c0b017346f4f9b6:9e30b3abc7ef9a3de926"
     }
   ],
   "produtos": [
@@ -18,6 +27,10 @@
       "descricao": "Bolo recheado com brigadeiro",
       "tamanho": "1kg",
       "tipo": "BOLO",
+      "precoUnitario": 95,
+      "anexo": [
+        "/assets/produtos/bolo-chocolate.png"
+      ],
       "imagemUrl": "/assets/produtos/bolo-chocolate.png",
       "imagemAlt": "Bolo de chocolate com cobertura de brigadeiro"
     },
@@ -27,6 +40,10 @@
       "descricao": "Massa aveludada com cream cheese",
       "tamanho": "1kg",
       "tipo": "BOLO",
+      "precoUnitario": 110,
+      "anexo": [
+        "/assets/produtos/bolo-red-velvet.png"
+      ],
       "imagemUrl": "/assets/produtos/bolo-red-velvet.png",
       "imagemAlt": "Bolo red velvet com cobertura de cream cheese"
     },
@@ -36,6 +53,10 @@
       "descricao": "Caixa com 6 cupcakes decorados",
       "tamanho": "6 unidades",
       "tipo": "CUPCAKE",
+      "precoUnitario": 48,
+      "anexo": [
+        "/assets/produtos/caixa-cupcakes.png"
+      ],
       "imagemUrl": "/assets/produtos/caixa-cupcakes.png",
       "imagemAlt": "Caixa com seis cupcakes decorados"
     },
@@ -45,6 +66,10 @@
       "descricao": "Torta gelada com merengue",
       "tamanho": "8 fatias",
       "tipo": "TORTA",
+      "precoUnitario": 72,
+      "anexo": [
+        "/assets/produtos/torta-limao.png"
+      ],
       "imagemUrl": "/assets/produtos/torta-limao.png",
       "imagemAlt": "Torta de limao com merengue tostado"
     }
@@ -151,11 +176,17 @@
     {
       "id": 1,
       "usuarioId": 1,
+      "nomeRecebedor": "Elaine Souza",
       "endereco": "Rua das Flores, 123",
+      "complemento": "Casa 2",
+      "referencia": "Portao branco",
       "tipoEntrega": "ENTREGA",
+      "melhorHorarioEntrega": "14:00",
+      "observacoes": "Entregar na portaria",
+      "anexo": [],
       "valorTotal": 185,
       "desconto": 5,
-      "status": "PENDENTE",
+      "status": "EM_PREPARO",
       "itens": [
         {
           "id": 1,
@@ -168,8 +199,14 @@
     {
       "id": 2,
       "usuarioId": 1,
+      "nomeRecebedor": "",
       "endereco": "",
+      "complemento": "",
+      "referencia": "",
       "tipoEntrega": "RETIRADA",
+      "melhorHorarioEntrega": "",
+      "observacoes": "Cliente retira no balcao",
+      "anexo": [],
       "valorTotal": 48,
       "desconto": 0,
       "status": "EM_PREPARO",
@@ -187,9 +224,10 @@
       "usuarioId": 1,
       "endereco": "Rua Persistida, 77",
       "tipoEntrega": "ENTREGA",
+      "anexo": [],
       "valorTotal": 110,
       "desconto": 0,
-      "status": "PENDENTE",
+      "status": "EM_ABERTO",
       "itens": [
         {
           "id": 3,
@@ -204,9 +242,10 @@
       "usuarioId": 1,
       "endereco": "Rua Ministro Lindolfo Collor, n° 215, Bairro Primeiro de Maio",
       "tipoEntrega": "ENTREGA",
+      "anexo": [],
       "valorTotal": 1100,
       "desconto": 0,
-      "status": "PENDENTE",
+      "status": "EM_ABERTO",
       "itens": [
         {
           "id": 4,
@@ -215,12 +254,60 @@
           "preco": 110
         }
       ]
+    },
+    {
+      "id": 5,
+      "usuarioId": 1,
+      "endereco": "Rua Ministro Linfoldo Collor, n 215, bairro Primeiro de Maio",
+      "tipoEntrega": "ENTREGA",
+      "anexo": [],
+      "valorTotal": 288,
+      "desconto": 12,
+      "status": "EM_ABERTO",
+      "itens": [
+        {
+          "id": 5,
+          "produtoId": 1,
+          "quantidade": 2,
+          "preco": 95
+        },
+        {
+          "id": 6,
+          "produtoId": 2,
+          "quantidade": 1,
+          "preco": 110
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "usuarioId": 1,
+      "endereco": "sdgasgdrg",
+      "tipoEntrega": "ENTREGA",
+      "anexo": [],
+      "valorTotal": 226,
+      "desconto": 12,
+      "status": "EM_ABERTO",
+      "itens": [
+        {
+          "id": 7,
+          "produtoId": 1,
+          "quantidade": 2,
+          "preco": 95
+        },
+        {
+          "id": 8,
+          "produtoId": 3,
+          "quantidade": 1,
+          "preco": 48
+        }
+      ]
     }
   ],
   "counters": {
-    "usuario": 2,
-    "pedido": 5,
-    "pedidoItem": 5,
+    "usuario": 3,
+    "pedido": 7,
+    "pedidoItem": 9,
     "produto": 5,
     "massa": 4,
     "sabor": 5,

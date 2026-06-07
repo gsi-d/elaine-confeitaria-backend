@@ -27,6 +27,8 @@ function createInitialState() {
         descricao: 'Bolo recheado com brigadeiro',
         tamanho: '1kg',
         tipo: 'BOLO',
+        precoUnitario: 95,
+        anexo: ['/assets/produtos/bolo-chocolate.png'],
         imagemUrl: '/assets/produtos/bolo-chocolate.png',
         imagemAlt: 'Bolo de chocolate com cobertura de brigadeiro',
       },
@@ -36,6 +38,8 @@ function createInitialState() {
         descricao: 'Massa aveludada com cream cheese',
         tamanho: '1kg',
         tipo: 'BOLO',
+        precoUnitario: 110,
+        anexo: ['/assets/produtos/bolo-red-velvet.png'],
         imagemUrl: '/assets/produtos/bolo-red-velvet.png',
         imagemAlt: 'Bolo red velvet com cobertura de cream cheese',
       },
@@ -45,6 +49,8 @@ function createInitialState() {
         descricao: 'Caixa com 6 cupcakes decorados',
         tamanho: '6 unidades',
         tipo: 'CUPCAKE',
+        precoUnitario: 48,
+        anexo: ['/assets/produtos/caixa-cupcakes.png'],
         imagemUrl: '/assets/produtos/caixa-cupcakes.png',
         imagemAlt: 'Caixa com seis cupcakes decorados',
       },
@@ -54,6 +60,8 @@ function createInitialState() {
         descricao: 'Torta gelada com merengue',
         tamanho: '8 fatias',
         tipo: 'TORTA',
+        precoUnitario: 72,
+        anexo: ['/assets/produtos/torta-limao.png'],
         imagemUrl: '/assets/produtos/torta-limao.png',
         imagemAlt: 'Torta de limao com merengue tostado',
       },
@@ -99,11 +107,17 @@ function createInitialState() {
       {
         id: 1,
         usuarioId: 1,
+        nomeRecebedor: 'Elaine Souza',
         endereco: 'Rua das Flores, 123',
+        complemento: 'Casa 2',
+        referencia: 'Portao branco',
         tipoEntrega: 'ENTREGA',
+        melhorHorarioEntrega: '14:00',
+        observacoes: 'Entregar na portaria',
+        anexo: [],
         valorTotal: 185,
         desconto: 5,
-        status: 'PENDENTE',
+        status: 'EM_ABERTO',
         itens: [
           { id: 1, produtoId: 1, quantidade: 2, preco: 95 },
         ],
@@ -111,8 +125,14 @@ function createInitialState() {
       {
         id: 2,
         usuarioId: 1,
+        nomeRecebedor: '',
         endereco: '',
+        complemento: '',
+        referencia: '',
         tipoEntrega: 'RETIRADA',
+        melhorHorarioEntrega: '',
+        observacoes: 'Cliente retira no balcao',
+        anexo: [],
         valorTotal: 48,
         desconto: 0,
         status: 'EM_PREPARO',
@@ -180,6 +200,7 @@ function hydratePedido(pedido) {
 
   return clone({
     ...pedido,
+    anexo: Array.isArray(pedido.anexo) ? pedido.anexo : [],
     usuario: (() => {
       const usuario = findUsuarioById(pedido.usuarioId);
       return usuario

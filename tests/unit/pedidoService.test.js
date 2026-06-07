@@ -66,8 +66,14 @@ test('pedidoService.createPedido calcula total e persiste itens', async () => {
   });
 
   const result = await service.createPedido(99, {
+    nomeRecebedor: 'Joana',
     endereco: 'Rua B, 22',
+    complemento: 'Casa',
+    referencia: 'Porta azul',
     tipoEntrega: 'ENTREGA',
+    melhorHorarioEntrega: '16:00',
+    observacoes: 'Sem cebola',
+    anexo: ['arquivo-base64'],
     desconto: 5,
     itens: [{ produtoId: 3, quantidade: 2 }],
   });
@@ -75,5 +81,8 @@ test('pedidoService.createPedido calcula total e persiste itens', async () => {
   assert.equal(result.id, 10);
   assert.equal(persistedPayload.usuarioId, 99);
   assert.equal(persistedPayload.valorTotal, 25);
+  assert.equal(persistedPayload.nomeRecebedor, 'Joana');
+  assert.equal(persistedPayload.status, 'EM_ABERTO');
+  assert.deepEqual(persistedPayload.anexo, ['arquivo-base64']);
   assert.equal(persistedPayload.itens.create[0].preco, 15);
 });
