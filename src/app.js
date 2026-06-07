@@ -40,16 +40,13 @@ function createApp(serviceOverrides = {}) {
   app.use(globalMiddleware);
 
   app.use('/auth', createAuthRoutes(authController));
-
-  app.use(authMiddleware);
-
-  app.use('/produtos', produtoRoutes);
-  app.use('/massas', massaRoutes);
-  app.use('/sabores', saborRoutes);
-  app.use('/usuarios', usuarioRoutes);
-  app.use('/tabelas-preco', tabelaPrecoRoutes);
-  app.use('/tp-itens', tpItemRoutes);
-  app.use('/pedidos', createPedidoRoutes(pedidoController));
+  app.use('/produtos', authMiddleware, produtoRoutes);
+  app.use('/massas', authMiddleware, massaRoutes);
+  app.use('/sabores', authMiddleware, saborRoutes);
+  app.use('/tabelas-preco', authMiddleware, tabelaPrecoRoutes);
+  app.use('/tp-itens', authMiddleware, tpItemRoutes);
+  app.use('/pedidos', authMiddleware, createPedidoRoutes(pedidoController));
+  app.use('/usuarios', authMiddleware, usuarioRoutes);
 
   app.use(errorHandler);
 

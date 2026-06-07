@@ -1,10 +1,14 @@
 const { createHttpError } = require('../errors/httpError');
 const { pedidoRepository } = require('../repositories/pedidoRepository');
 const { precoRepository } = require('../repositories/precoRepository');
+const { usuarioRepository } = require('../repositories/usuarioRepository');
 const {
   validateCreatePedidoPayload,
   validateUpdatePedidoPayload,
+  validateUpdatePedidoStatusPayload,
 } = require('../validators/pedidoValidator');
+
+const DEFAULT_ADMIN_EMAIL = 'cliente@elaine.com';
 
 async function hydrateItens(itens, priceLookupRepository) {
   const hydratedItems = [];
@@ -46,10 +50,16 @@ function calculateTotals(itens, desconto) {
 function serializePedidoInput(usuarioId, data, itens) {
   return {
     usuarioId,
+    nomeRecebedor: data.nomeRecebedor,
     endereco: data.endereco,
+    complemento: data.complemento,
+    referencia: data.referencia,
     tipoEntrega: data.tipoEntrega,
+    melhorHorarioEntrega: data.melhorHorarioEntrega,
+    observacoes: data.observacoes,
+    anexo: data.anexo,
     desconto: data.desconto,
-    status: data.status || 'PENDENTE',
+    status: data.status || 'EM_ABERTO',
     valorTotal: data.valorTotal,
     itens: {
       create: itens.map((item) => ({
@@ -65,6 +75,7 @@ function createPedidoService(dependencies = {}) {
   const {
     repository = pedidoRepository,
     priceLookupRepository = precoRepository,
+    userRepository = usuarioRepository,
   } = dependencies;
 
   return {
@@ -93,7 +104,7 @@ function createPedidoService(dependencies = {}) {
           {
             ...validatedPayload,
             ...totals,
-            status: 'PENDENTE',
+            status: 'EM_ABERTO',
           },
           pricedItems,
         ),
@@ -125,11 +136,32 @@ function createPedidoService(dependencies = {}) {
 
       const totals = calculateTotals(nextItens, desconto);
       const updateData = {
+        nomeRecebedor:
+          validatedPayload.nomeRecebedor !== undefined
+            ? validatedPayload.nomeRecebedor
+            : currentPedido.nomeRecebedor,
         endereco:
           validatedPayload.endereco !== undefined
             ? validatedPayload.endereco
             : currentPedido.endereco,
+        complemento:
+          validatedPayload.complemento !== undefined
+            ? validatedPayload.complemento
+            : currentPedido.complemento,
+        referencia:
+          validatedPayload.referencia !== undefined
+            ? validatedPayload.referencia
+            : currentPedido.referencia,
         tipoEntrega: validatedPayload.tipoEntrega || currentPedido.tipoEntrega,
+        melhorHorarioEntrega:
+          validatedPayload.melhorHorarioEntrega !== undefined
+            ? validatedPayload.melhorHorarioEntrega
+            : currentPedido.melhorHorarioEntrega,
+        observacoes:
+          validatedPayload.observacoes !== undefined
+            ? validatedPayload.observacoes
+            : currentPedido.observacoes,
+        anexo: validatedPayload.anexo !== undefined ? validatedPayload.anexo : currentPedido.anexo,
         desconto,
         status: validatedPayload.status || currentPedido.status,
         valorTotal: totals.valorTotal,
@@ -137,6 +169,14 @@ function createPedidoService(dependencies = {}) {
 
       if (updateData.tipoEntrega === 'ENTREGA' && !updateData.endereco) {
         throw createHttpError(400, 'Endereço é obrigatório para entrega');
+      }
+
+      if (updateData.tipoEntrega === 'ENTREGA' && !updateData.nomeRecebedor) {
+        throw createHttpError(400, 'Nome de quem vai receber é obrigatório para entrega');
+      }
+
+      if (updateData.tipoEntrega === 'ENTREGA' && !updateData.melhorHorarioEntrega) {
+        throw createHttpError(400, 'Melhor horário de entrega é obrigatório para entrega');
       }
 
       if (validatedPayload.itens) {
@@ -165,6 +205,29 @@ function createPedidoService(dependencies = {}) {
       if (!deleted) {
         throw createHttpError(404, 'Pedido não encontrado');
       }
+    },
+
+    async updatePedidoStatus(id, payload) {
+      const { usuarioId, status } = validateUpdatePedidoStatusPayload(payload);
+      let effectiveUserId = usuarioId;
+
+      if (!effectiveUserId) {
+        const adminUser = await userRepository.findByEmail(DEFAULT_ADMIN_EMAIL);
+
+        if (!adminUser) {
+          throw createHttpError(500, `Usuário administrador padrão não encontrado: ${DEFAULT_ADMIN_EMAIL}`);
+        }
+
+        effectiveUserId = adminUser.id;
+      }
+
+      const updatedPedido = await repository.update(id, effectiveUserId, { status });
+
+      if (!updatedPedido) {
+        throw createHttpError(404, 'Pedido não encontrado');
+      }
+
+      return updatedPedido;
     },
   };
 }

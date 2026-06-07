@@ -5,7 +5,7 @@ function authMiddleware(request, response, next) {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {
-    return response.status(401).json({ message: 'Token não informado' });
+    return next();
   }
 
   const parts = authHeader.split(' ');
@@ -26,4 +26,3 @@ function authMiddleware(request, response, next) {
 }
 
 module.exports = authMiddleware;
-

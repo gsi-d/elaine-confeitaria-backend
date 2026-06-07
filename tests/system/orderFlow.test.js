@@ -25,8 +25,14 @@ function createInMemoryPedidoRepository() {
       const pedido = {
         id: nextPedidoId++,
         usuarioId: data.usuarioId,
+        nomeRecebedor: data.nomeRecebedor,
         endereco: data.endereco,
+        complemento: data.complemento,
+        referencia: data.referencia,
         tipoEntrega: data.tipoEntrega,
+        melhorHorarioEntrega: data.melhorHorarioEntrega,
+        observacoes: data.observacoes,
+        anexo: data.anexo || [],
         valorTotal: data.valorTotal,
         desconto: data.desconto,
         status: data.status,
@@ -55,8 +61,14 @@ function createInMemoryPedidoRepository() {
         return null;
       }
 
+      pedido.nomeRecebedor = data.nomeRecebedor;
       pedido.endereco = data.endereco;
+      pedido.complemento = data.complemento;
+      pedido.referencia = data.referencia;
       pedido.tipoEntrega = data.tipoEntrega;
+      pedido.melhorHorarioEntrega = data.melhorHorarioEntrega;
+      pedido.observacoes = data.observacoes;
+      pedido.anexo = data.anexo;
       pedido.valorTotal = data.valorTotal;
       pedido.desconto = data.desconto;
       pedido.status = data.status;
@@ -158,8 +170,14 @@ test('fluxo de login e CRUD de pedido funciona ponta a ponta', async () => {
       method: 'POST',
       headers: authHeader,
       body: JSON.stringify({
+        nomeRecebedor: 'Carlos',
         endereco: 'Rua D, 45',
+        complemento: 'Bloco B',
+        referencia: 'Praca central',
         tipoEntrega: 'ENTREGA',
+        melhorHorarioEntrega: '18:00',
+        observacoes: 'Ligar ao chegar',
+        anexo: ['base64-a', 'base64-b'],
         desconto: 10,
         itens: [
           { produtoId: 1, quantidade: 2 },
@@ -170,6 +188,9 @@ test('fluxo de login e CRUD de pedido funciona ponta a ponta', async () => {
 
     assert.equal(createResponse.status, 201);
     assert.equal(createResponse.json.valorTotal, 70);
+    assert.equal(createResponse.json.status, 'EM_ABERTO');
+    assert.equal(createResponse.json.nomeRecebedor, 'Carlos');
+    assert.deepEqual(createResponse.json.anexo, ['base64-a', 'base64-b']);
 
     const pedidoId = createResponse.json.id;
 
@@ -186,15 +207,17 @@ test('fluxo de login e CRUD de pedido funciona ponta a ponta', async () => {
       method: 'PUT',
       headers: authHeader,
       body: JSON.stringify({
-        status: 'EM_PREPARO',
+        status: 'PRONTO_PARA_RETIRADA',
+        anexo: ['base64-c'],
         desconto: 5,
         itens: [{ produtoId: 1, quantidade: 1 }],
       }),
     });
 
     assert.equal(updateResponse.status, 200);
-    assert.equal(updateResponse.json.status, 'EM_PREPARO');
+    assert.equal(updateResponse.json.status, 'PRONTO_PARA_RETIRADA');
     assert.equal(updateResponse.json.valorTotal, 25);
+    assert.deepEqual(updateResponse.json.anexo, ['base64-c']);
 
     const getResponse = await requestJson(server.baseUrl, `/pedidos/${pedidoId}`, {
       headers: {
@@ -204,6 +227,7 @@ test('fluxo de login e CRUD de pedido funciona ponta a ponta', async () => {
 
     assert.equal(getResponse.status, 200);
     assert.equal(getResponse.json.id, pedidoId);
+    assert.deepEqual(getResponse.json.anexo, ['base64-c']);
 
     const deleteResponse = await requestJson(server.baseUrl, `/pedidos/${pedidoId}`, {
       method: 'DELETE',

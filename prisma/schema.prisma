@@ -16,6 +16,8 @@ model Produto {
   descricao String?
   tamanho   String?
   tipo      String?
+  precoUnitario Float?
+  anexo     Json?
   imagemUrl String?
   imagemAlt String?
 
@@ -71,8 +73,14 @@ model Pedido {
   id          Int      @id @default(autoincrement())
   usuario     Usuario  @relation(fields: [usuarioId], references: [id])
   usuarioId   Int
+  nomeRecebedor String?
   endereco    String
+  complemento String?
+  referencia  String?
   tipoEntrega String
+  melhorHorarioEntrega String?
+  observacoes String?
+  anexo       Json?
   valorTotal  Float
   desconto    Float?
   status      String

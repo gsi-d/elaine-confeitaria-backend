@@ -1,7 +1,14 @@
 const { createHttpError } = require('../errors/httpError');
 
 const DELIVERY_TYPES = new Set(['ENTREGA', 'RETIRADA']);
-const ORDER_STATUS = new Set(['PENDENTE', 'EM_PREPARO', 'FINALIZADO', 'CANCELADO']);
+const ORDER_STATUS = new Set([
+  'EM_ABERTO',
+  'EM_PREPARO',
+  'SAIU_PARA_ENTREGA',
+  'PRONTO_PARA_RETIRADA',
+  'FINALIZADO',
+  'CANCELADO',
+]);
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -45,6 +52,18 @@ function normalizeDesconto(desconto) {
   return parsed;
 }
 
+function normalizeAnexo(anexo) {
+  if (anexo === undefined) {
+    return undefined;
+  }
+
+  if (!Array.isArray(anexo)) {
+    throw createHttpError(400, 'Anexo deve ser um array');
+  }
+
+  return anexo;
+}
+
 function normalizeTipoEntrega(tipoEntrega) {
   const normalized = normalizeString(tipoEntrega).toUpperCase();
 
@@ -53,6 +72,14 @@ function normalizeTipoEntrega(tipoEntrega) {
   }
 
   return normalized;
+}
+
+function normalizeOptionalString(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return normalizeString(value);
 }
 
 function validateCreatePedidoPayload(payload) {
@@ -64,16 +91,38 @@ function validateCreatePedidoPayload(payload) {
   const tipoEntrega = normalizeTipoEntrega(payload.tipoEntrega);
   const itens = normalizeItens(payload.itens);
   const desconto = normalizeDesconto(payload.desconto);
+  const anexo = normalizeAnexo(payload.anexo) || [];
+  const nomeRecebedor = normalizeString(payload.nomeRecebedor);
+  const complemento = normalizeOptionalString(payload.complemento) || '';
+  const referencia = normalizeOptionalString(payload.referencia) || '';
+  const melhorHorarioEntrega = normalizeString(payload.melhorHorarioEntrega);
+  const observacoes = normalizeOptionalString(payload.observacoes) || '';
 
-  if (tipoEntrega === 'ENTREGA' && !endereco) {
-    throw createHttpError(400, 'Endereço é obrigatório para entrega');
+  if (tipoEntrega === 'ENTREGA') {
+    if (!nomeRecebedor) {
+      throw createHttpError(400, 'Nome de quem vai receber é obrigatório para entrega');
+    }
+
+    if (!endereco) {
+      throw createHttpError(400, 'Endereço é obrigatório para entrega');
+    }
+
+    if (!melhorHorarioEntrega) {
+      throw createHttpError(400, 'Melhor horário de entrega é obrigatório para entrega');
+    }
   }
 
   return {
+    nomeRecebedor,
     endereco,
+    complemento,
+    referencia,
     tipoEntrega,
+    melhorHorarioEntrega,
+    observacoes,
     desconto,
     itens,
+    anexo,
   };
 }
 
@@ -88,12 +137,36 @@ function validateUpdatePedidoPayload(payload) {
     normalized.endereco = normalizeString(payload.endereco);
   }
 
+  if (payload.nomeRecebedor !== undefined) {
+    normalized.nomeRecebedor = normalizeString(payload.nomeRecebedor);
+  }
+
+  if (payload.complemento !== undefined) {
+    normalized.complemento = normalizeOptionalString(payload.complemento);
+  }
+
+  if (payload.referencia !== undefined) {
+    normalized.referencia = normalizeOptionalString(payload.referencia);
+  }
+
   if (payload.tipoEntrega !== undefined) {
     normalized.tipoEntrega = normalizeTipoEntrega(payload.tipoEntrega);
   }
 
+  if (payload.melhorHorarioEntrega !== undefined) {
+    normalized.melhorHorarioEntrega = normalizeString(payload.melhorHorarioEntrega);
+  }
+
+  if (payload.observacoes !== undefined) {
+    normalized.observacoes = normalizeOptionalString(payload.observacoes);
+  }
+
   if (payload.desconto !== undefined) {
     normalized.desconto = normalizeDesconto(payload.desconto);
+  }
+
+  if (payload.anexo !== undefined) {
+    normalized.anexo = normalizeAnexo(payload.anexo);
   }
 
   if (payload.status !== undefined) {
@@ -122,7 +195,46 @@ function validateUpdatePedidoPayload(payload) {
     throw createHttpError(400, 'Endereço é obrigatório para entrega');
   }
 
+  if (
+    normalized.tipoEntrega === 'ENTREGA' &&
+    normalized.nomeRecebedor !== undefined &&
+    !normalized.nomeRecebedor
+  ) {
+    throw createHttpError(400, 'Nome de quem vai receber é obrigatório para entrega');
+  }
+
+  if (
+    normalized.tipoEntrega === 'ENTREGA' &&
+    normalized.melhorHorarioEntrega !== undefined &&
+    !normalized.melhorHorarioEntrega
+  ) {
+    throw createHttpError(400, 'Melhor horário de entrega é obrigatório para entrega');
+  }
+
   return normalized;
+}
+
+function validateUpdatePedidoStatusPayload(payload) {
+  if (!payload || typeof payload !== 'object') {
+    throw createHttpError(400, 'Payload de atualização de status inválido');
+  }
+
+  const status = normalizeString(payload.status).toUpperCase();
+  const hasUsuarioId = payload.usuarioId !== undefined && payload.usuarioId !== null && payload.usuarioId !== '';
+  const usuarioId = hasUsuarioId ? Number(payload.usuarioId) : undefined;
+
+  if (hasUsuarioId && (!Number.isInteger(usuarioId) || usuarioId <= 0)) {
+    throw createHttpError(400, 'Usuário inválido para atualização de status');
+  }
+
+  if (!ORDER_STATUS.has(status)) {
+    throw createHttpError(400, 'Status do pedido inválido');
+  }
+
+  return {
+    usuarioId,
+    status,
+  };
 }
 
 module.exports = {
@@ -130,4 +242,5 @@ module.exports = {
   ORDER_STATUS,
   validateCreatePedidoPayload,
   validateUpdatePedidoPayload,
+  validateUpdatePedidoStatusPayload,
 };
