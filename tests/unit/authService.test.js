@@ -11,6 +11,7 @@ test('authService.login retorna token e usuário sanitizado', async () => {
           id: 7,
           email: 'cliente@elaine.com',
           senha: 'hashed',
+          isAdmin: true,
           endereco: null,
         };
       },
@@ -26,6 +27,7 @@ test('authService.login retorna token e usuário sanitizado', async () => {
   assert.equal(result.token, 'signed-token');
   assert.equal(result.usuario.id, 7);
   assert.equal(result.usuario.email, 'cliente@elaine.com');
+  assert.equal(result.usuario.isAdmin, true);
   assert.equal(result.usuario.senha, undefined);
 });
 
@@ -37,6 +39,7 @@ test('authService.login rejeita senha inválida', async () => {
           id: 7,
           email: 'cliente@elaine.com',
           senha: 'hashed',
+          isAdmin: true,
         };
       },
     },

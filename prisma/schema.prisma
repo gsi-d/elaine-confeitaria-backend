@@ -41,6 +41,7 @@ model Usuario {
   id             Int      @id @default(autoincrement())
   email          String   @unique
   senha          String
+  isAdmin        Boolean  @default(false)
   endereco       String?
   telefone       String?
   cpf            String?
@@ -48,6 +49,15 @@ model Usuario {
   dataNascimento String?
 
   pedidos Pedido[]
+}
+
+model ConfiguracaoEntrega {
+  id                 Int      @id @default(1)
+  tempoMinimoMinutos Int
+  tempoMaximoMinutos Int
+  mensagemLivre      String?
+  updatedByUsuarioId Int?
+  updatedAt          DateTime @updatedAt
 }
 
 model TabelaPreco {

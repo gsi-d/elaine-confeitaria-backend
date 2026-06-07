@@ -80,7 +80,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"endereco\": \"Rua das Flores, 123\",\n  \"tipoEntrega\": \"ENTREGA\",\n  \"desconto\": 5,\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 2\n    }\n  ]\n}"
+              "raw": "{\n  \"nomeRecebedor\": \"Maria\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"complemento\": \"Casa 2\",\n  \"referencia\": \"Portao branco\",\n  \"tipoEntrega\": \"ENTREGA\",\n  \"melhorHorarioEntrega\": \"18:30\",\n  \"observacoes\": \"Tocar interfone\",\n  \"desconto\": 5,\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 2\n    }\n  ]\n}"
             },
             "url": "{{baseUrl}}/pedidos"
           }
@@ -105,9 +105,23 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"EM_PREPARO\",\n  \"desconto\": 3,\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 1\n    }\n  ]\n}"
+              "raw": "{\n  \"status\": \"EM_PREPARO\",\n  \"observacoes\": \"Sai hoje\",\n  \"desconto\": 3,\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 1\n    }\n  ]\n}"
             },
             "url": "{{baseUrl}}/pedidos/{{pedidoId}}"
+          }
+        },
+        {
+          "name": "Atualizar Status do Pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SAIU_PARA_ENTREGA\"\n}"
+            },
+            "url": "{{baseUrl}}/pedidos/{{pedidoId}}/status"
           }
         },
         {
@@ -173,6 +187,28 @@
               { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": "{{baseUrl}}/tp-itens"
+          }
+        },
+        {
+          "name": "Buscar Configuracao de Entrega",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/configuracao-entrega"
+          }
+        },
+        {
+          "name": "Atualizar Configuracao de Entrega",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempoMinimoMinutos\": 60,\n  \"tempoMaximoMinutos\": 90,\n  \"mensagemLivre\": \"Alta demanda no momento\"\n}"
+            },
+            "url": "{{baseUrl}}/configuracao-entrega"
           }
         }
       ]

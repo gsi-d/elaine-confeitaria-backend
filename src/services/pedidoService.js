@@ -8,7 +8,16 @@ const {
   validateUpdatePedidoStatusPayload,
 } = require('../validators/pedidoValidator');
 
-const DEFAULT_ADMIN_EMAIL = 'cliente@elaine.com';
+async function resolveAdminUserId(userRepository) {
+  const users = await userRepository.findMany();
+  const adminUser = users.find((user) => user.isAdmin === true);
+
+  if (!adminUser) {
+    throw createHttpError(500, 'Nenhum usuário administrador encontrado para atualizar status');
+  }
+
+  return adminUser.id;
+}
 
 async function hydrateItens(itens, priceLookupRepository) {
   const hydratedItems = [];
@@ -212,13 +221,7 @@ function createPedidoService(dependencies = {}) {
       let effectiveUserId = usuarioId;
 
       if (!effectiveUserId) {
-        const adminUser = await userRepository.findByEmail(DEFAULT_ADMIN_EMAIL);
-
-        if (!adminUser) {
-          throw createHttpError(500, `Usuário administrador padrão não encontrado: ${DEFAULT_ADMIN_EMAIL}`);
-        }
-
-        effectiveUserId = adminUser.id;
+        effectiveUserId = await resolveAdminUserId(userRepository);
       }
 
       const updatedPedido = await repository.update(id, effectiveUserId, { status });

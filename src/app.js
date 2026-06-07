@@ -13,7 +13,11 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const { createAuthController } = require('./controllers/authController');
 const { createPedidoController } = require('./controllers/pedidoController');
+const {
+  createConfiguracaoEntregaController,
+} = require('./controllers/configuracaoEntregaController');
 const createAuthRoutes = require('./routes/createAuthRoutes');
+const createConfiguracaoEntregaRoutes = require('./routes/createConfiguracaoEntregaRoutes');
 const createPedidoRoutes = require('./routes/createPedidoRoutes');
 const produtoRoutes = require('./routes/produtoRoutes');
 const massaRoutes = require('./routes/massaRoutes');
@@ -26,6 +30,9 @@ function createApp(serviceOverrides = {}) {
   const services = createServices(serviceOverrides);
   const authController = createAuthController({ service: services.authService });
   const pedidoController = createPedidoController({ service: services.pedidoService });
+  const configuracaoEntregaController = createConfiguracaoEntregaController({
+    service: services.configuracaoEntregaService,
+  });
 
   const app = express();
 
@@ -45,6 +52,7 @@ function createApp(serviceOverrides = {}) {
   app.use('/sabores', authMiddleware, saborRoutes);
   app.use('/tabelas-preco', authMiddleware, tabelaPrecoRoutes);
   app.use('/tp-itens', authMiddleware, tpItemRoutes);
+  app.use('/configuracao-entrega', authMiddleware, createConfiguracaoEntregaRoutes(configuracaoEntregaController));
   app.use('/pedidos', authMiddleware, createPedidoRoutes(pedidoController));
   app.use('/usuarios', authMiddleware, usuarioRoutes);
 
