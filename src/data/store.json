@@ -30,6 +30,16 @@
       "telefone": "d1074540b449cdcb8037c8a1ae01555e:e54812d07c06e6cccafe",
       "cpf": "1ac3fbf761490bb3347dc33111fe8eae:424a60bbd78565e251b4ee",
       "dataNascimento": "e17e6d51bc104a9bff59377ce28480dc:3a029cdf57dc6341c949"
+    },
+    {
+      "id": 4,
+      "email": "g@g.com",
+      "senha": "$2b$10$Uj/Pf3ZZWZ1Eis3LrKawnu8w2/A5B2jZLsYZokbwMnGT3lrf1mne.",
+      "isAdmin": false,
+      "endereco": "612e1dc22ab765ce0f9faf077caf6314:4139d0828c29b5ba1d46012cd61f79d266e1e599b08a42cefa179ddd052e3e6ac728b1e6eb199d287e8638d00982d5a8c30010e630",
+      "telefone": "61d07ea9ac24637c6137b32a8befb070:107606e8341d9a7f9fa301",
+      "cpf": "488f0e42966c01c0e34f7b03f1607bdf:d2b1a50843d9cf28f7dfce",
+      "dataNascimento": "32498114f453dd58e4a0a3cf91bcfe98:f3b0a37c9251429e9a26"
     }
   ],
   "configuracaoEntrega": {
@@ -324,7 +334,7 @@
     }
   ],
   "counters": {
-    "usuario": 4,
+    "usuario": 5,
     "pedido": 7,
     "pedidoItem": 9,
     "produto": 5,

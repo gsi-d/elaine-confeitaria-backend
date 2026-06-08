@@ -1,8 +1,12 @@
 const { createCatalogService } = require('./catalogService');
 const { createInMemoryCatalogRepository } = require('../repositories/inMemoryCatalogRepository');
+const { createPrismaCatalogRepository } = require('../repositories/prismaCatalogRepository');
+const { isPrismaPersistenceEnabled } = require('../config/persistence');
 
 const saborService = createCatalogService(
-  createInMemoryCatalogRepository('sabores'),
+  isPrismaPersistenceEnabled()
+    ? createPrismaCatalogRepository('sabor')
+    : createInMemoryCatalogRepository('sabores'),
   'Sabor não encontrado',
 );
 

@@ -19,6 +19,11 @@ async function resolveAdminUserId(userRepository) {
   return adminUser.id;
 }
 
+async function isAdminUser(userRepository, usuarioId) {
+  const usuario = await userRepository.findById(usuarioId);
+  return usuario?.isAdmin === true;
+}
+
 async function hydrateItens(itens, priceLookupRepository) {
   const hydratedItems = [];
 
@@ -88,12 +93,19 @@ function createPedidoService(dependencies = {}) {
   } = dependencies;
 
   return {
-    getAllPedidos(usuarioId) {
+    async getAllPedidos(usuarioId) {
+      if (await isAdminUser(userRepository, usuarioId)) {
+        return repository.findMany();
+      }
+
       return repository.findManyByUsuarioId(usuarioId);
     },
 
     async getPedidoById(id, usuarioId) {
-      const pedido = await repository.findByIdAndUsuarioId(id, usuarioId);
+      const isAdmin = await isAdminUser(userRepository, usuarioId);
+      const pedido = isAdmin
+        ? await repository.findById(id)
+        : await repository.findByIdAndUsuarioId(id, usuarioId);
 
       if (!pedido) {
         throw createHttpError(404, 'Pedido não encontrado');

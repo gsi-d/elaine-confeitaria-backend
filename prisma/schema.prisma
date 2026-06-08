@@ -23,11 +23,15 @@ model Produto {
 
   tpItems TPItem[]
   pItems  PItem[]
+
+  @@map("Produto")
 }
 
 model Massa {
   id        Int      @id @default(autoincrement())
   descricao String
+
+  @@map("Massa")
 }
 
 model Sabor {
@@ -49,6 +53,8 @@ model Usuario {
   dataNascimento String?
 
   pedidos Pedido[]
+
+  @@map("Usuario")
 }
 
 model ConfiguracaoEntrega {
@@ -58,6 +64,8 @@ model ConfiguracaoEntrega {
   mensagemLivre      String?
   updatedByUsuarioId Int?
   updatedAt          DateTime @updatedAt
+
+  @@map("ConfiguracaoEntrega")
 }
 
 model TabelaPreco {
@@ -68,6 +76,8 @@ model TabelaPreco {
   atual      Boolean  @default(false)
 
   itens TPItem[]
+
+  @@map("TabelaPreco")
 }
 
 model TPItem {
@@ -77,25 +87,29 @@ model TPItem {
   produto       Produto     @relation(fields: [produtoId], references: [id])
   produtoId     Int
   preco         Float
+
+  @@map("TPItem")
 }
 
 model Pedido {
-  id          Int      @id @default(autoincrement())
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId   Int
-  nomeRecebedor String?
-  endereco    String
-  complemento String?
-  referencia  String?
-  tipoEntrega String
+  id                   Int      @id @default(autoincrement())
+  usuario              Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId            Int
+  nomeRecebedor        String?
+  endereco             String
+  complemento          String?
+  referencia           String?
+  tipoEntrega          String
   melhorHorarioEntrega String?
-  observacoes String?
-  anexo       Json?
-  valorTotal  Float
-  desconto    Float?
-  status      String
+  observacoes          String?
+  anexo                Json?
+  valorTotal           Float
+  desconto             Float?
+  status               String
 
   itens PItem[]
+
+  @@map("Pedido")
 }
 
 model PItem {
@@ -106,4 +120,6 @@ model PItem {
   produtoId  Int
   quantidade Int
   preco      Float
+
+  @@map("PItem")
 }

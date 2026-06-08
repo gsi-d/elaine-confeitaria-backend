@@ -16,6 +16,8 @@ Neste momento a API roda inteiramente em memória com dados fake, sem dependênc
   - email: `cliente@elaine.com`
   - senha: `123456`
 
+Também já existe suporte a persistência com Prisma, controlada por `PERSISTENCE_DRIVER`.
+
 ## Arquitetura
 
 A aplicação segue uma arquitetura em camadas:
@@ -116,12 +118,23 @@ npm install
 npm run dev
 ```
 
+Para usar banco com Prisma:
+
+```bash
+# ajuste DATABASE_URL no .env
+# troque PERSISTENCE_DRIVER para prisma
+npm run prisma:generate
+npm run dev
+```
+
 ## Variáveis de Ambiente
 
+- `PERSISTENCE_DRIVER`: `memory` (padrão) ou `prisma`
 - `JWT_SECRET`: obrigatória em produção; em `development` e `test` usa fallback local
 - `ENCRYPTION_SECRET`: obrigatória em produção; em `development` e `test` usa fallback local
 - `JWT_EXPIRES_IN`: opcional, padrão `1h`
 - `PORT`: opcional, padrão `3000`
+- `DATABASE_URL`: obrigatória para usar Prisma
 
 Em produção, a aplicação falha no boot se `JWT_SECRET` ou `ENCRYPTION_SECRET` não estiverem definidas.
 

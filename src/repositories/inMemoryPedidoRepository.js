@@ -2,10 +2,20 @@ const { store, nextId, hydratePedido, persistStore } = require('../data/inMemory
 
 function createInMemoryPedidoRepository() {
   return {
+    async findMany() {
+      return store.pedidos.map((pedido) => hydratePedido(pedido));
+    },
+
     async findManyByUsuarioId(usuarioId) {
       return store.pedidos
         .filter((pedido) => pedido.usuarioId === usuarioId)
         .map((pedido) => hydratePedido(pedido));
+    },
+
+    async findById(id) {
+      const pedido = store.pedidos.find((item) => item.id === id) || null;
+
+      return hydratePedido(pedido);
     },
 
     async findByIdAndUsuarioId(id, usuarioId) {
