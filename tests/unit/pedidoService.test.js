@@ -86,3 +86,55 @@ test('pedidoService.createPedido calcula total e persiste itens', async () => {
   assert.deepEqual(persistedPayload.anexo, ['arquivo-base64']);
   assert.equal(persistedPayload.itens.create[0].preco, 15);
 });
+
+test('pedidoService.getAllPedidos retorna todos os pedidos para admin', async () => {
+  let listedAll = false;
+
+  const service = createPedidoService({
+    repository: {
+      async findManyByUsuarioId() {
+        throw new Error('não deveria filtrar por usuário');
+      },
+      async findMany() {
+        listedAll = true;
+        return [{ id: 1 }, { id: 2 }];
+      },
+    },
+    userRepository: {
+      async findById(id) {
+        return { id, isAdmin: true };
+      },
+    },
+  });
+
+  const result = await service.getAllPedidos(7);
+
+  assert.equal(listedAll, true);
+  assert.deepEqual(result, [{ id: 1 }, { id: 2 }]);
+});
+
+test('pedidoService.getPedidoById busca qualquer pedido para admin', async () => {
+  let lookedUpAll = false;
+
+  const service = createPedidoService({
+    repository: {
+      async findByIdAndUsuarioId() {
+        throw new Error('não deveria filtrar por usuário');
+      },
+      async findById(id) {
+        lookedUpAll = true;
+        return { id, usuarioId: 99 };
+      },
+    },
+    userRepository: {
+      async findById(id) {
+        return { id, isAdmin: true };
+      },
+    },
+  });
+
+  const result = await service.getPedidoById(12, 7);
+
+  assert.equal(lookedUpAll, true);
+  assert.deepEqual(result, { id: 12, usuarioId: 99 });
+});

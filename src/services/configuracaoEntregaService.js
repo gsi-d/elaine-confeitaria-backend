@@ -2,6 +2,10 @@ const { createHttpError } = require('../errors/httpError');
 const {
   inMemoryConfiguracaoEntregaRepository,
 } = require('../repositories/inMemoryConfiguracaoEntregaRepository');
+const {
+  prismaConfiguracaoEntregaRepository,
+} = require('../repositories/prismaConfiguracaoEntregaRepository');
+const { isPrismaPersistenceEnabled } = require('../config/persistence');
 
 function normalizeInteger(value, fieldName) {
   const parsed = Number(value);
@@ -46,7 +50,9 @@ function validateConfiguracaoEntregaPayload(payload) {
 }
 
 function createConfiguracaoEntregaService(dependencies = {}) {
-  const { repository = inMemoryConfiguracaoEntregaRepository } = dependencies;
+  const { repository = isPrismaPersistenceEnabled()
+    ? prismaConfiguracaoEntregaRepository
+    : inMemoryConfiguracaoEntregaRepository } = dependencies;
 
   return {
     getConfiguracaoEntrega() {

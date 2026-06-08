@@ -3,8 +3,12 @@ const path = require('path');
 
 const { createHttpError } = require('../errors/httpError');
 const { createInMemoryCatalogRepository } = require('../repositories/inMemoryCatalogRepository');
+const { createPrismaCatalogRepository } = require('../repositories/prismaCatalogRepository');
+const { isPrismaPersistenceEnabled } = require('../config/persistence');
 
-const repository = createInMemoryCatalogRepository('produtos');
+const repository = isPrismaPersistenceEnabled()
+  ? createPrismaCatalogRepository('produto')
+  : createInMemoryCatalogRepository('produtos');
 const ASSETS_ROOT = path.join(__dirname, '..', '..', 'public');
 
 function resolveAssetPath(assetUrl) {
@@ -26,8 +30,6 @@ function buildProdutoPayload(produto) {
   return {
     ...produto,
     anexo,
-    imageUrl: undefined,
-    imagemUrl: undefined,
   };
 }
 
